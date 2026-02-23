@@ -37,7 +37,7 @@ app.post('/products', async (req, res) => {
 
 app.get('/products', async (req, res) => {
   try {
-    const sql = 'SELECT name,price,description,category FROM produtosEmilly'
+    const sql = 'SELECT id, name, price, description, category FROM produtosEmilly'
     const [rows] = await pool.query(sql)
     return res.json(rows)
   } catch (err) {
@@ -46,8 +46,21 @@ app.get('/products', async (req, res) => {
   }
 })
 
-app. delete('/products/:id', (req, res)=>{
-  console.log(req.params.id)
+app.delete('/products/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const sql = 'DELETE FROM produtosEmilly WHERE id = ?'
+    const [result] = await pool.execute(sql, [id])
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Produto não encontrado' })
+    }
+    
+    return res.json({ message: 'Produto deletado com sucesso' })
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ message: 'Erro ao deletar produto', error: err.message })
+  }
 })
 
 const PORT = process.env.PORT || 3000
