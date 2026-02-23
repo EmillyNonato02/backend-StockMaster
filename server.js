@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { response } from 'express'
 import cors from 'cors'
 import mysql from 'mysql2/promise'
 
@@ -44,6 +44,10 @@ app.get('/products', async (req, res) => {
     console.error(err)
     return res.status(500).json({ message: 'Erro ao obter produtos', error: err.message })
   }
+})
+
+app. delete('/products/:id', (req, res)=>{
+  console.log(req.params.id)
 })
 
 const PORT = process.env.PORT || 3000

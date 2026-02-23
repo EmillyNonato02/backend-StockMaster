@@ -1,0 +1,17 @@
+GET http://localhost:3000/products
+
+###
+
+POST http://localhost:3000/products
+Content-Type: application/json
+
+{
+    "name": "Computador Lenovo",
+    "price": 2500,
+    "description": "Um belo computador com 8GB de RAM, processador i5 e SSD 256GB",
+    "category": "Eletronicos"
+}
+
+### 
+
+DELETE http://localhost:3000/products/54
