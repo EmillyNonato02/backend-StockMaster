@@ -51,15 +51,59 @@ app.delete('/products/:id', async (req, res) => {
     const { id } = req.params
     const sql = 'DELETE FROM produtosEmilly WHERE id = ?'
     const [result] = await pool.execute(sql, [id])
-    
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Produto não encontrado' })
     }
-    
+
     return res.json({ message: 'Produto deletado com sucesso' })
   } catch (err) {
     console.error(err)
     return res.status(500).json({ message: 'Erro ao deletar produto', error: err.message })
+  }
+})
+
+app.get('/products/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const sql = 'SELECT id, name, price, description, category FROM produtosEmilly WHERE id = ?'
+    const [rows] = await pool.query(sql, [id])
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Produto não encontrado' })
+    }
+
+    return res.json(rows[0])
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ message: 'Erro ao obter produto', error: err.message })
+  }
+})
+
+app.put('/products/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const { name, price, description = '', category } = req.body
+
+    if (!name || price == null || category == null) {
+      return res.status(400).json({ message: 'Dados incompletos' })
+    }
+
+    const priceNum = Number(price)
+    if (Number.isNaN(priceNum)) return res.status(400).json({ message: 'Preço inválido' })
+
+    const sql = 'UPDATE produtosEmilly SET name = ?, price = ?, description = ?, category = ? WHERE id = ?'
+    const params = [name, priceNum, description, category, id]
+    const [result] = await pool.execute(sql, params)
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Produto não encontrado' })
+    }
+
+    return res.json({ message: 'Produto atualizado com sucesso' })
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ message: 'Erro ao atualizar produto', error: err.message })
   }
 })
 
